@@ -50,7 +50,7 @@ class ma24126a_driver(core.usbpm_driver):
         return True
 
     def zero_set(self):
-        self.pm_start()
+        self.start()
         self.wait_ok(b"ZERO\n",0.5,25)
         return True
 
