@@ -5,19 +5,6 @@ import datetime
 from . import core
 
 class ma24126a_driver(core.usbpm_driver):
-    rtimeout = 0.1
-    wtimeout = 0.1
-
-    def test(self):
-        print('This is a test.')
-        return
-
-    def test2(self):
-        self._pm.write(b"IDN?\n")
-        time.sleep(0.1)
-        id = self._pm.read(37)
-        print(id)
-        return
 
     def quary(self,cmd,wt=0.001):
         self.send(cmd)
@@ -267,55 +254,3 @@ class ma24126a_driver(core.usbpm_driver):
     def check_freq(self):
         ret = self.quary(b"FREQ?\n")
         return ret
-
-    def save_csv(self,count,mergin):
-        """
-        測定データをcsvファイルに保存するメソッド
-        """
-        try : wt = open("data.csv","w")
-        except :
-            print("data.csv has already opened.")
-            sys.exit()
-        wt.write("Time,Power\n")
-        pw = self.power_cnt(count = count,mergin = mergin)
-        pw = pw.split(b"\n")
-        a = 0
-        while a < count :
-            t = a * mergin
-            wt.write("%f,%f\n"%(t,float(pw[a])))
-            a = a + 1
-        wt.close()
-        return True
-
-    def get_data(self, countg, merging):
-        """
-        測定データを取得するメソッドです。
-            ・countg - いくつのデータを取得するか
-            ・merging - 一つのデータを取得してから次のデータを取得するまでの時間
-            save_csv()との違いは、ファイル名に測定時間が追加されることです。
-            実験データを取得する場合、こちらを使いましょう。
-        """
-        try: os.mkdir("observation")
-        except: pass
-
-        os.chdir("observation")
-
-        d1 = datetime.datetime.today()
-        d2 = d1.strftime("%Y-%m-%d_%H-%M-%S")
-        self.save_csv(countg, merging)
-        os.rename("data.csv","data_%s.csv"%d2)
-
-        os.chdir("../")
-        return True
-
-    def check_integer(self,a):
-        if type(a) == int : pass
-        else :
-            print("Use only integer")
-            sys.exit()
-
-    def check_float(self):
-        if type(a) == float : pass
-        else :
-            print("Use only float")
-            sys.exit()
